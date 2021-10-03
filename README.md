@@ -36,5 +36,5 @@ Para esse desafio, temos os seguintes testes:
 
 ### Demo
 <h1 align="center">
-  <img alt="Print dos testes efetuados" title="#testes" src="./assets/testes.png" />
+  <img alt="Print dos testes efetuados" title="#testes" src="/assets/testes.png" />
 </h1>
