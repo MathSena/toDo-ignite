@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -10,26 +9,26 @@ app.use(express.json());
 
 const users = [];
 
+// Middleware para verificação de existência de conta de usuário
 function checksExistsUserAccount(request, response, next) {
-    const { username } = request.headers;
-    const user = users.find((user)=> users.username === username);
+    const {username} = request.headers;
+    const user = users.find(user => user.username === username); //Realizando a busca 
 
-    if(!user){
+    if(!user){ // Se não encontrar o usuário...
       return response.status(404).json({error: "User not found!"});
     }
 
-
     request.user = user;
 
-    return next();
+    return next(); // Prossiga
 }
 
+// Criação de usuário
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
-
   const userExists = users.find(user => user.username === username);
 
- if(userExists){
+  if(userExists){ //Se o username existir
     return response.status(400).json({error: "Username already exists!"});
 
   }
@@ -41,19 +40,20 @@ app.post('/users', (request, response) => {
     todos: []
   }
 
-  users.push(userData)
-
+  users.push(userData); // Adicionando os usuários no array
   return response.status(201).json(userData);
 
 });
 
+// Listagem de todos
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request;
-  return response.json(users.todos)
+  return response.json(user.todos); 
 });
 
+// Postagens de todos
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  const { user } = request.body;
+  const { user } = request;
   const {title, deadline } = request.body;
 
   const todo = { 
@@ -70,31 +70,56 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
 });
 
+// Atualizando um todo pelo seu ID
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  const { user } = request.body;
+  const { user } = request;
   const { title, deadline } = request.body;
   const { id } = request.params;
 
+  const todo = user.todos.find(todo => todo.id === id); //Buscanso o todo pelo id no array -> Retornará True or False
 
-  user.todos.find(todo => todo.id === id);
+  if(!todo){ // Se não encontrar o todo no array...
+    return response.status(404).json({error: "Todo not found"});
+  }
+
+  //Atualizando o todo
+  todo.title = title; 
+  todo.deadline = new Date(deadline);
+
+  return response.json(todo);
+});
+
+// Atualizando um todo colocando como done
+app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
+  const { user } = request;
+  const { id } = request.params;
+  const todo = user.todos.find(todo => todo.id === id);
 
   if(!todo){
+    return response.status(404).json({error: "Todo not found"});
+  }
+
+  todo.done = true;
+
+  return response.json(todo);
+
+});
+
+// Deletando o todo
+app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+  const { user } = request;
+  const { id } = request.params;
+
+  const todoIndex = user.todos.findIndex(todo => todo.id === id); // Realizando a busca do todo pelo index
+
+  if(todoIndex === -1){ // Se não encontrar o todo
     return response.status(404).json({error: "Todo not found"})
   }
 
-  todo.title = title;
-  todo.deadline = new Date(deadline);
+ user.todos.splice(todoIndex, 1); // Realizandpo a deleção
 
+ return response.status(204).json();
 
-  return response.json(todo)
-});
-
-app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
-});
-
-app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
 });
 
 module.exports = app;
