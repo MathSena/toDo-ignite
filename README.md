@@ -1,9 +1,7 @@
 # Desafio 01 - Conceitos do Node.js
 
 ## 💻 Sobre o desafio
-Nesse desafio, foi criada uma aplicação de gerenciamento de todos
-
-Essa será uma aplicação para gerenciar tarefas (em inglês *todos*). Será permitida a criação de um usuário com `name` e `username`, bem como fazer o CRUD de *todos*:
+Nesse desafio, foi criada uma aplicação de gerenciamento de todos. Essa será uma aplicação para gerenciar tarefas (em inglês *todos*). Será permitida a criação de um usuário com `name` e `username`, bem como fazer o CRUD de *todos*:
 
 ### Tecnologias utilizadas
 - Node
